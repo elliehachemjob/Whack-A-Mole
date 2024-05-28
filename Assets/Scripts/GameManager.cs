@@ -2,7 +2,68 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour {
-  [SerializeField] private List<Mole> moles;
+
+    [SerializeField] private GameObject playButton;
+    [SerializeField] private GameObject gameUI;
+    [SerializeField] private GameObject outOfTimeText;
+    [SerializeField] private GameObject bombText;
+    [SerializeField] private TMPro.TextMeshProUGUI timeText;
+    [SerializeField] private TMPro.TextMeshProUGUI scoreText;
+
+    // Hardcoded variables you may want to tune.
+    private float startingTime = 30f;
+
+    // Global variables
+    private float timeRemaining;
+    private HashSet<Mole> currentMoles = new HashSet<Mole>();
+    private int score;
+    private bool playing = false;
+
+    // This is public so the play button can see it.
+    public void StartGame()
+    {
+        // Hide/show the UI elements we don't/do want to see.
+        playButton.SetActive(false);
+        outOfTimeText.SetActive(false);
+        bombText.SetActive(false);
+        gameUI.SetActive(true);
+        // Hide all the visible moles.
+        for (int i = 0; i < moles.Count; i++)
+        {
+            moles[i].Hide();
+            moles[i].SetIndex(i);
+        }
+        // Remove any old game state.
+        currentMoles.Clear();
+        // Start with 30 seconds.
+        timeRemaining = startingTime;
+        score = 0;
+        scoreText.text = "0";
+        playing = true;
+    }
+
+    public void GameOver(int type)
+    {
+        // Show the message.
+        if (type == 0)
+        {
+            outOfTimeText.SetActive(true);
+        }
+        else
+        {
+            bombText.SetActive(true);
+        }
+        // Hide all moles.
+        foreach (Mole mole in moles)
+        {
+            mole.StopGame();
+        }
+        // Stop the game and show the start UI.
+        playing = false;
+        playButton.SetActive(true);
+    }
+
+    /*[SerializeField] private List<Mole> moles;
 
   [Header("UI objects")]
   [SerializeField] private GameObject playButton;
@@ -99,4 +160,6 @@ public class GameManager : MonoBehaviour {
     // Remove from active moles.
     currentMoles.Remove(moles[moleIndex]);
   }
+
+    */
 }
